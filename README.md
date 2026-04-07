@@ -11,12 +11,6 @@ This repository is a cleaned public-release package extracted from the original 
 - Query files, schemas, precomputed process abstractions, RAG resources, and selected final experiment artifacts
 - The paper PDF used for the release package
 
-## Recommended Repository Name
-
-`multi-agent-process-mining-qa`
-
-This is short, descriptive, and still close to the paper title.
-
 ## Included Code
 
 - `src/multi_agent_framework.py`
@@ -120,12 +114,6 @@ The packaged release already includes selected final result directories:
 - `artifacts/baseline3_rag_enabled`
 
 Note: the bundled multi-agent artifact is the latest available executed run from the `v1-8` series, while the packaged source code is the cleaned final code snapshot.
-
-## Paper
-
-The release package includes the paper PDF at:
-
-- `paper/ASPAI26_multi_agent_orchestration_framework_for_complex_process_mining_query_answering.pdf`
 
 ## Notes
 
