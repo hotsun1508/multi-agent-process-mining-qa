@@ -1,0 +1,57 @@
+{
+  "source_dataset": "/data/msa_ids25/workspace/(ASPAI)vertical-bar-server/data/BPI Challenge 2017.xes",
+  "source_loader": "pm4py.read_xes",
+  "generated_at_utc": "2026-04-03T06:02:03.432379+00:00",
+  "target_object_type": "case:concept:name",
+  "available_object_types": [
+    "case:concept:name"
+  ],
+  "process_structure_hints": "BPI Challenge 2017 case-centric event log. Cases: 31509. Events: 1202267. Unique activities: 26. Mean events per case: 38.16. Median events per case: 35.0. Unique resources: 149. Top activities: {\"W_Validate application\": 209496, \"W_Call after offers\": 191092, \"W_Call incomplete files\": 168529, \"W_Complete application\": 148900, \"W_Handle leads\": 47264, \"O_Create Offer\": 42995, \"O_Created\": 42995, \"O_Sent (mail and online)\": 39707, \"A_Validating\": 38816, \"A_Create Application\": 31509}. Most common start activities: {\"A_Create Application\": 31509}. Most common end activities: {\"W_Validate application\": 12662, \"W_Call after offers\": 9457, \"W_Call incomplete files\": 4676, \"O_Cancelled\": 4436, \"W_Complete application\": 144, \"W_Assess potential fraud\": 102, \"O_Sent (mail and online)\": 15, \"O_Sent (online only)\": 8}. Use exact activity labels with prefixes such as A_, O_, and W_.",
+  "ocdfg_summary": "Top directly-follows edges: W_Validate application -> W_Validate application (115590); W_Call after offers -> W_Call after offers (115569); W_Call incomplete files -> W_Call incomplete files (113918); W_Complete application -> W_Complete application (64695); O_Create Offer -> O_Created (42995); W_Validate application -> A_Validating (38816); O_Created -> O_Sent (mail and online) (35604); W_Complete application -> W_Call after offers (31362); W_Call after offers -> A_Complete (31362); O_Sent (mail and online) -> W_Complete application (30912); A_Complete -> W_Call after offers (30396); A_Accepted -> O_Create Offer (29966)",
+  "ocpn_summary": "[UNAVAILABLE] Petri net abstraction is intentionally skipped for the large BPI Challenge 2017 log in this precomputed summary.",
+  "features_summary": "Case length distribution: mean=38.16, median=35.00, p90=60.00. Top resources: {\"User_1\": 148404, \"User_3\": 26342, \"User_5\": 22900, \"User_87\": 22498, \"User_30\": 21272, \"User_49\": 21134, \"User_123\": 20909, \"User_29\": 20860, \"User_100\": 20651, \"User_2\": 19134}. case:RequestedAmount distribution: mean=16759.47, median=14000.00, min=0.00, max=450000.00. FirstWithdrawalAmount distribution: mean=8394.34, median=5000.00, min=0.00, max=75000.00. MonthlyCost distribution: mean=281.40, median=244.52, min=43.05, max=6673.83. CreditScore distribution: mean=318.65, median=0.00, min=0.00, max=1145.00. OfferedAmount distribution: mean=18513.72, median=15000.00, min=5000.00, max=75000.00. Accepted top values: {\"True\": 30136, \"False\": 12859}. Selected top values: {\"True\": 21768, \"False\": 21227}. case:ApplicationType top values: {\"New credit\": 1083767, \"Limit raise\": 118500}. case:LoanGoal top values: {\"Car\": 339798, \"Home improvement\": 294389, \"Existing loan takeover\": 227606, \"Other, see explanation\": 110643, \"Unknown\": 85085, \"Remaining debt home\": 43874, \"Not speficied\": 41048, \"Extra spending limit\": 22964}.",
+  "variants_summary": "Representative process variants: A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> W_Complete application -> A_Accepted -> O_Create Offer -> O_Created -> ... (frequency = 1056); A_Create Application -> W_Complete application -> W_Complete application -> A_Concept -> A_Accepted -> O_Create Offer -> O_Created -> O_Sent (mail and online) -> W_Complete application -> W_Call after offers -> ... (frequency = 1021); A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> W_Complete application -> W_Complete application -> A_Accepted -> O_Create Offer -> ... (frequency = 734); A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> W_Complete application -> W_Complete application -> W_Complete application -> A_Accepted -> ... (frequency = 451); A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> A_Accepted -> O_Create Offer -> O_Created -> O_Sent (mail and online) -> ... (frequency = 332); A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> W_Complete application -> W_Complete application -> W_Complete application -> W_Complete application -> ... (frequency = 298); A_Create Application -> W_Complete application -> W_Complete application -> A_Concept -> A_Accepted -> O_Create Offer -> O_Created -> O_Sent (mail and online) -> W_Complete application -> W_Call after offers -> ... (frequency = 278); A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> W_Complete application -> A_Accepted -> O_Create Offer -> O_Created -> ... (frequency = 244)",
+  "attributes_summary": "Event attributes: Action, org:resource, concept:name, EventOrigin, EventID, lifecycle:transition, time:timestamp, FirstWithdrawalAmount, NumberOfTerms, Accepted, MonthlyCost, Selected, CreditScore, OfferedAmount, OfferID. Case attributes: case:LoanGoal, case:ApplicationType, case:concept:name, case:RequestedAmount.",
+  "summary_metrics": {
+    "case_count": 31509,
+    "event_count": 1202267,
+    "activity_count": 26,
+    "top_activities": {
+      "W_Validate application": 209496,
+      "W_Call after offers": 191092,
+      "W_Call incomplete files": 168529,
+      "W_Complete application": 148900,
+      "W_Handle leads": 47264,
+      "O_Create Offer": 42995,
+      "O_Created": 42995,
+      "O_Sent (mail and online)": 39707,
+      "A_Validating": 38816,
+      "A_Create Application": 31509
+    },
+    "start_activities": {
+      "A_Create Application": 31509
+    },
+    "end_activities": {
+      "W_Validate application": 12662,
+      "W_Call after offers": 9457,
+      "W_Call incomplete files": 4676,
+      "O_Cancelled": 4436,
+      "W_Complete application": 144,
+      "W_Assess potential fraud": 102,
+      "O_Sent (mail and online)": 15,
+      "O_Sent (online only)": 8
+    },
+    "representative_variants": {
+      "A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> W_Complete application -> A_Accepted -> O_Create Offer -> O_Created -> O_Sent (mail and online) -> W_Complete application -> W_Call after offers -> W_Call after offers -> A_Complete -> W_Call after offers -> W_Call after offers -> W_Call after offers -> A_Cancelled -> O_Cancelled -> W_Call after offers": 1056,
+      "A_Create Application -> W_Complete application -> W_Complete application -> A_Concept -> A_Accepted -> O_Create Offer -> O_Created -> O_Sent (mail and online) -> W_Complete application -> W_Call after offers -> W_Call after offers -> A_Complete -> W_Call after offers -> W_Call after offers -> W_Call after offers -> A_Cancelled -> O_Cancelled -> W_Call after offers": 1021,
+      "A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> W_Complete application -> W_Complete application -> A_Accepted -> O_Create Offer -> O_Created -> O_Sent (mail and online) -> W_Complete application -> W_Call after offers -> W_Call after offers -> A_Complete -> W_Call after offers -> W_Call after offers -> W_Call after offers -> A_Cancelled -> O_Cancelled -> W_Call after offers": 734,
+      "A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> W_Complete application -> W_Complete application -> W_Complete application -> A_Accepted -> O_Create Offer -> O_Created -> O_Sent (mail and online) -> W_Complete application -> W_Call after offers -> W_Call after offers -> A_Complete -> W_Call after offers -> W_Call after offers -> W_Call after offers -> A_Cancelled -> O_Cancelled -> W_Call after offers": 451,
+      "A_Create Application -> A_Submitted -> W_Handle leads -> W_Handle leads -> W_Complete application -> A_Concept -> A_Accepted -> O_Create Offer -> O_Created -> O_Sent (mail and online) -> W_Complete application -> W_Call after offers -> W_Call after offers -> A_Complete -> W_Call after offers -> W_Call after offers -> W_Call after offers -> A_Cancelled -> O_Cancelled -> W_Call after offers": 332
+    },
+    "case_duration_hours": {
+      "mean_hours": 525.59,
+      "median_hours": 458.11,
+      "p90_hours": 841.32
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "file_path": "/data/msa_ids25/workspace/(ASPAI)vertical-bar-server/data/order-management.json",
+  "format": "OCEL (JSON)",
+  "object_types": [
+    "customers",
+    "employees",
+    "items",
+    "orders",
+    "packages",
+    "products"
+  ],
+  "activities": [
+    "confirm order",
+    "create package",
+    "failed delivery",
+    "item out of stock",
+    "package delivered",
+    "pay order",
+    "payment reminder",
+    "pick item",
+    "place order",
+    "reorder item",
+    "send package"
+  ],
+  "event_attributes": [
+    "attributes",
+    "id",
+    "relationships",
+    "time",
+    "type"
+  ],
+  "object_attributes": [
+    "price",
+    "role",
+    "weight"
+  ],
+  "extraction_method": "custom_json_parser"
+}

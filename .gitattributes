@@ -1,0 +1,8 @@
+data/*.xes filter=lfs diff=lfs merge=lfs -text
+data/*.sqlite filter=lfs diff=lfs merge=lfs -text
+data/*.jsonocel filter=lfs diff=lfs merge=lfs -text
+data/sample_o2c_vanzandt_2024_05.json filter=lfs diff=lfs merge=lfs -text
+artifacts/**/*.csv filter=lfs diff=lfs merge=lfs -text
+artifacts/**/*.json filter=lfs diff=lfs merge=lfs -text
+resources/pm4py_faiss_db/*.faiss filter=lfs diff=lfs merge=lfs -text
+resources/pm4py_faiss_db/*.pkl filter=lfs diff=lfs merge=lfs -text

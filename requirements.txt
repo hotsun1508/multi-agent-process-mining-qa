@@ -1,0 +1,12 @@
+pandas>=2.2
+numpy>=1.26
+matplotlib>=3.8
+pm4py>=2.7
+python-dotenv>=1.0
+openpyxl>=3.1
+langchain-core>=0.3
+langchain-community>=0.3
+langchain-openai>=0.2
+langgraph>=0.2
+faiss-cpu>=1.8
+tiktoken>=0.7
