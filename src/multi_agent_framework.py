@@ -13,9 +13,9 @@ import numpy as np
 import pm4py
 import re
 import warnings
-import sqlite3 # [Added] Exec 실행 시 필요
+import sqlite3 # [Added] Required for generated execution code
 import matplotlib
-import matplotlib.pyplot as plt # [Added] 시각화 실행 시 필요
+import matplotlib.pyplot as plt # [Added] Required for visualization code
 
 from pathlib import Path
 from dotenv import load_dotenv
@@ -31,9 +31,9 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.documents import Document
 from langgraph.graph import StateGraph, END
 
-# [Fix] 시끄러운 경고 메시지 차단
+# [Fix] Silence noisy warning messages
 warnings.filterwarnings("ignore", category=UserWarning)
-# [Fix] 서버 환경에서 GUI 창 뜨지 않게 설정
+# [Fix] Prevent GUI windows in server environments
 matplotlib.use('Agg')
 
 # --------------------------------------------------
@@ -44,26 +44,26 @@ REPO_ROOT = SRC_DIR.parent
 load_dotenv(REPO_ROOT / ".env")
 
 if not os.getenv("OPENAI_API_KEY"):
-    raise ValueError("OPENAI_API_KEY가 .env 파일에 설정되지 않았습니다.")
+    raise ValueError("OPENAI_API_KEY is not set in the .env file.")
 
-# 모델 설정
+# Model configuration
 # --------------------------------------------------
 # [Cost Optimization Strategy]
 # --------------------------------------------------
-# 1. Debugging Mode (All mini): 실험 루프 돌릴 때 사용. 비용 거의 안 듦.
+# 1. Debugging Mode (All mini): useful for experiment loops at minimal cost.
 llm_supervisor = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 llm_worker = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-# 2. Hybrid Mode (Recommended): Supervisor/Assembler는 싸게, Coder는 똑똑하게.
-# llm_supervisor = ChatOpenAI(model="gpt-4o-mini", temperature=0) # 계획은 mini도 잘함
-# llm_worker = ChatOpenAI(model="gpt-4o", temperature=0)      # 코딩은 4o가 확실함
+# 2. Hybrid Mode (Recommended): cheaper Supervisor/Assembler, stronger Coder.
+# llm_supervisor = ChatOpenAI(model="gpt-4o-mini", temperature=0) # mini is usually enough for planning
+# llm_worker = ChatOpenAI(model="gpt-4o", temperature=0)      # 4o is more reliable for code generation
 
-# 3. Final Benchmark Mode: 논문용 최종 데이터 뽑을 때만 활성화.
+# 3. Final Benchmark Mode: enable only for final paper-ready benchmark runs.
 # llm_supervisor = ChatOpenAI(model="gpt-4o", temperature=0)
 # llm_worker = ChatOpenAI(model="gpt-4o", temperature=0)
 
 class LogUtils:
-    """디버깅에 최적화된 로그 유틸리티"""
+    """Logging utilities optimized for debugging."""
     GREEN = "\033[92m"
     CYAN = "\033[96m"
     YELLOW = "\033[93m"
@@ -112,7 +112,7 @@ class LogUtils:
             print(f"{i+1:03d} | {line}")
         print(f"{LogUtils.YELLOW}------------------------{LogUtils.RESET}")
     
-    # [Added] RAG 검색 결과 로깅 메서드
+    # [Added] Log retrieved RAG sources
     @staticmethod
     def print_rag_sources(docs, title="RAG Retrieval Results"):
         print(f"\n   {LogUtils.CYAN}[{title}]{LogUtils.RESET}")
@@ -121,7 +121,7 @@ class LogUtils:
             return
 
         for i, doc in enumerate(docs):
-            # Document 객체일 수도 있고, (Document, score) 튜플일 수도 있음
+            # The item may be either a Document or a (Document, score) tuple.
             if isinstance(doc, tuple):
                 content = doc[0].page_content
                 meta = doc[0].metadata
@@ -133,16 +133,16 @@ class LogUtils:
                 score_str = ""
 
             func_name = meta.get('function_name', 'Manual Chunk')
-            # 내용 미리보기 (줄바꿈 제거 후 100자)
+            # Content preview with line breaks removed
             # preview = content.replace('\n', ' ').strip()[:100]
             preview = content.replace('\n', ' ').strip()[:300]
             
             print(f"     {i+1}. {LogUtils.BOLD}[{func_name}]{LogUtils.RESET} {score_str}")
             print(f"        {LogUtils.YELLOW}\"{preview}...\"{LogUtils.RESET}")
 
-# [Added] JSON 파싱 헬퍼 함수
+# [Added] JSON parsing helper
 def clean_and_parse_json(content: str):
-    """LLM 출력이 Markdown 형식이거나 사족이 있어도 순수 JSON만 추출"""
+    """Extract pure JSON even if the LLM output includes Markdown or extra text."""
     try:
         return json.loads(content)
     except json.JSONDecodeError:
@@ -197,7 +197,7 @@ class ProjectConfig:
     GENERAL_ABSTRACTION_FILE = os.path.join(CONTEXT_DIR, "bpi-challenge-2017_pm_abstractions.json")
     OCEL_ABSTRACTION_FILE = os.path.join(CONTEXT_DIR, "order-management_pm_abstractions.json")
     
-    # [Mod] 로그 저장 경로 및 파일명 설정 (Timestamp 포함)
+    # [Mod] Log path and filename configuration (timestamp included)
     LOG_DIR = ARTIFACTS_DIR
     LOG_FILE = os.path.join(LOG_DIR, f"{FILE_PREFIX}_log.txt")
 
@@ -221,22 +221,22 @@ except Exception:
     pass
 
 # --------------------------------------------------
-# [New Class] DualLogger: 터미널과 파일에 동시 출력
+# [New Class] DualLogger: write to terminal and file simultaneously
 # --------------------------------------------------
 class DualLogger:
     def __init__(self, filepath):
         self.terminal = sys.stdout
-        self.log = open(filepath, "w", encoding='utf-8') # 'w'는 매번 새로 작성, 'a'는 이어쓰기
+        self.log = open(filepath, "w", encoding='utf-8') # 'w' overwrites; 'a' appends
         self.ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
 
     def write(self, message):
-        # 1. 터미널 출력 (색상 유지)
+        # 1. Terminal output (keep colors)
         self.terminal.write(message)
         
-        # 2. 파일 출력 (색상 제거)
+        # 2. File output (strip ANSI colors)
         clean_message = self.ansi_escape.sub('', message)
         self.log.write(clean_message)
-        self.log.flush() # 즉시 기록
+        self.log.flush() # flush immediately
 
     def flush(self):
         self.terminal.flush()
@@ -250,7 +250,7 @@ class RAGManager:
         self.embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
         self.db_path = db_path
         
-        # DB 로드 시도
+        # Try to load an existing DB
         if os.path.exists(db_path):
             try:
                 self.vector_db = FAISS.load_local(db_path, self.embeddings, allow_dangerous_deserialization=True)
@@ -263,16 +263,16 @@ class RAGManager:
             self._init_new_db()
 
     def _init_new_db(self):
-        """DB 초기화 및 매뉴얼 로드 (Smart Parsing 적용)"""
-        # 초기 빈 DB 생성
+        """Initialize the DB and load the manual using smart parsing."""
+        # Create an empty starter DB
         self.vector_db = FAISS.from_texts(["PM4Py RAG Initialization"], self.embeddings)
         
-        # 매뉴얼 파일이 있으면 파싱하여 추가
+        # Parse and add the manual if available
         if os.path.exists(ProjectConfig.MANUAL_TXT_PATH):
             self.load_and_chunk_manual(ProjectConfig.MANUAL_TXT_PATH)
 
     def _get_category(self, text):
-        """텍스트 기반 카테고리 추론"""
+        """Infer a coarse category from text."""
         text_lower = text.lower()
         if "discover" in text_lower: return "discovery"
         if "conformance" in text_lower: return "conformance"
@@ -282,8 +282,9 @@ class RAGManager:
 
     def load_and_chunk_manual(self, file_path):
         """
-        [Smart Parsing] 매뉴얼을 읽어 'tool'(함수)과 'concept'(설명)으로 분리 저장
-        build_rag.py와 동일한 로직입니다.
+        [Smart Parsing] Read the manual and split it into 'tool' (functions)
+        and 'concept' (descriptive sections).
+        This follows the same logic as build_rag.py.
         """
         print(f"[RAG] 📖 Loading and Smart Parsing Manual from {file_path}...")
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -294,7 +295,7 @@ class RAGManager:
         
         documents = []
         current_content = []
-        # 초기 상태: 설명(Concept)으로 시작한다고 가정
+        # Start by assuming the content begins with a descriptive concept section.
         current_meta = {"type": "concept", "source": "manual", "category": "general", "is_object_centric": False}
 
         for line in lines:
@@ -303,21 +304,21 @@ class RAGManager:
 
             match = func_pattern.match(line)
             
-            # [CASE 1] 함수 시그니처 발견 -> 'tool' 타입으로 저장
+            # [CASE 1] Function signature found -> save as a 'tool'
             if match:
-                # 이전 내용 저장
+                # Save the previous buffered content
                 if current_content:
                     full_text = "\n".join(current_content)
                     if len(full_text) > 20:
                         documents.append(Document(page_content=full_text, metadata=current_meta))
                 
-                # 새로운 'tool' 블록 시작
+                # Start a new 'tool' block
                 func_name = match.group(1)
                 args_str = match.group(2)
                 full_line = line
                 
                 meta = {
-                    "type": "tool",       # 핵심: 함수 정의는 tool로 분류
+                    "type": "tool",       # Key idea: function definitions are stored as tools
                     "source": "manual",
                     "function_name": func_name,
                     "category": self._get_category(func_name),
@@ -329,14 +330,14 @@ class RAGManager:
                 current_meta = meta
                 current_content = [f"[Function Signature] {line}"]
             
-            # [CASE 2] 대문자 헤더 발견 -> 새로운 'concept' 섹션 시작
+            # [CASE 2] Uppercase header found -> start a new 'concept' section
             elif line.isupper() and len(line) > 3 and "PM4PY" not in line:
                 if current_content:
                     full_text = "\n".join(current_content)
                     documents.append(Document(page_content=full_text, metadata=current_meta))
                 
                 current_meta = {
-                    "type": "concept",    # 핵심: 설명은 concept으로 분류
+                    "type": "concept",    # Key idea: descriptive text is stored as concepts
                     "source": "manual",
                     "category": self._get_category(line),
                     "section_title": line,
@@ -344,11 +345,11 @@ class RAGManager:
                 }
                 current_content = [line]
 
-            # [CASE 3] 일반 텍스트 -> 현재 모드에 누적
+            # [CASE 3] Plain text -> append to the current section
             else:
                 current_content.append(line)
 
-        # 마지막 버퍼 저장
+        # Save the final buffered section
         if current_content:
             documents.append(Document(page_content="\n".join(current_content), metadata=current_meta))
             
@@ -360,9 +361,9 @@ class RAGManager:
     def search_context(self, query: str, k=5, filter_type=None):
         """
         filter_type: 
-          - None: 전체 검색 (Supervisor용)
-          - "tool": 함수/코드만 검색 (Tool Generator용)
-          - "concept": 설명만 검색
+          - None: search all content (for Supervisor)
+          - "tool": search only functions/code (for Tool Generator)
+          - "concept": search only explanatory sections
         """
         filter_dict = {"type": filter_type} if filter_type else None
         
@@ -376,9 +377,9 @@ class RAGManager:
             return []
 
     def check_tool_cache(self, tool_plan: str, threshold=0.2): 
-        """캐시된 코드(Generated Tool) 우선 검색"""
+        """Search cached generated tools first."""
         try:
-            # 'source': 'generated' 필터로 검색
+            # Search using the 'source=generated' filter
             results = self.vector_db.similarity_search_with_score(
                 tool_plan, k=1, filter={"type": "tool", "source": "generated"}
             )
@@ -392,7 +393,7 @@ class RAGManager:
             return None
 
     def save_new_tool(self, tool_plan: str, tool_code: str):
-        """성공한 코드를 저장 ('source': 'generated')"""
+        """Persist successful generated code with source='generated'."""
         if self.check_tool_cache(tool_plan, threshold=0.1):
             return
 
@@ -422,13 +423,13 @@ class AgentState(TypedDict):
     answer_format: str
     query_interpretation: str
     query_requirements: str
-    data_summary: str      # 기존 간단 요약
-    rich_context: str      # [New] Schema + Process Context가 합쳐진 상세 정보
+    data_summary: str      # original concise summary
+    rich_context: str      # [New] detailed schema + process context
     tool_plan: str
     analysis_plan: str
     tool_code_list: List[str]
     last_generated_tool_code: str
-    last_failed_code: str # 실패한 코드를 저장해서 Supervisor에게 피드백
+    last_failed_code: str # store failed code so Supervisor can get feedback
     final_code: str
     execution_result: str
     error: Union[str, None]
@@ -1274,7 +1275,7 @@ def build_retry_feedback(state: AgentState, category: str) -> str:
 
 
 def load_query_file(path: str) -> pd.DataFrame:
-    """xlsx/csv 파일 모두 지원하는 쿼리 파일 로더 (5-4 코드 기반)"""
+    """Query-file loader supporting both xlsx and csv (based on the 5-4 code)."""
     suffix = Path(path).suffix.lower()
     if suffix in [".xlsx", ".xls"]:
         xls = pd.ExcelFile(path)
@@ -1293,7 +1294,7 @@ def load_query_file(path: str) -> pd.DataFrame:
 
 
 def get_query_text(row: pd.Series):
-    """다중 컬럼명 호환 쿼리 텍스트 추출 (5-4 코드 기반)"""
+    """Extract query text with compatibility across multiple column names."""
     for col in ["query", "질의", "question", "Query"]:
         if col in row and pd.notna(row.get(col)):
             q = str(row.get(col)).strip()
@@ -1454,10 +1455,10 @@ def supervisor_node(state: AgentState):
         state.get("query_interpretation", ""),
     )
     
-    # [Check 1] RAG 검색 확인: Supervisor는 전체 맥락이 필요하므로 Filter 없이 검색 (Tool + Concept)
+    # [Check 1] RAG retrieval for Supervisor: search broadly for overall context
     rag_docs = rag_manager.search_context(state['query'], k=5, filter_type="tool")
 
-    # 검색된 RAG 내용을 로그에 출력하는 코드 추가
+    # Log the retrieved RAG snippets
     LogUtils.print_rag_sources(rag_docs, title="RAG Context for Supervisor")
 
     rag_context = "\n".join([d.page_content for d, s in rag_docs])
@@ -1465,7 +1466,7 @@ def supervisor_node(state: AgentState):
     rich_context = state.get("rich_context", "")
     query_requirements = state.get("query_requirements", "")
 
-    # 4. 에러 피드백
+    # 4. Error feedback
     error_context = build_retry_feedback(state, category)
 
     if category == "general":
@@ -1619,15 +1620,15 @@ def tool_generator_node(state: AgentState):
             LogUtils.info("Cached Tool Rejected", exc)
 
     # print("   -> [Miss] Generating New Tool.")
-    # 코드를 짜야 하므로 'tool' 타입(함수 정의, 캐시 코드)만 검색
+    # The generator needs implementation-oriented material, so search only tools
     manual_docs = rag_manager.search_context(state['tool_plan'], k=5, filter_type="tool")
 
-    # 검색된 매뉴얼 내용을 로그에 출력하는 코드 추가
+    # Log the retrieved manual snippets
     LogUtils.print_rag_sources(manual_docs, title="RAG Manual for Tool Generator")
 
     manual_context = "\n".join([d.page_content for d, s in manual_docs])
 
-    # [Fix] 현재 타임스탬프가 적용된 Prefix 가져오기
+    # [Fix] Get the prefix that already includes the current timestamp
     prefix = ProjectConfig.FILE_PREFIX
 
     if category == "general":
@@ -1933,7 +1934,7 @@ def code_assembler_node(state: AgentState):
         data_load_instruction = "- Bind runtime input: `ocel = ACTIVE_DATA`"
         primary_input_name = "ocel"
     
-    # [수정] 프롬프트 강화: 도구와 계획을 결합하여 실행 가능한 스크립트 작성
+    # [Updated] Strengthened prompt: combine tools and plan into an executable script
     assembler_prompt = f"""
     You are a System Integrator. Assemble the final script.
 
@@ -2060,13 +2061,13 @@ def code_assembler_node(state: AgentState):
             "final_code": final_code
         }
     else:
-        # [성공 시 처리 로직]
-        print(f"\n{LogUtils.GREEN}{LogUtils.BOLD}----- [Code Assembler] 실행 성공 ! -----{LogUtils.RESET}")
+        # Success handling
+        print(f"\n{LogUtils.GREEN}{LogUtils.BOLD}----- [Code Assembler] Execution succeeded! -----{LogUtils.RESET}")
         LogUtils.info("Captured Output", captured_output)
         
-        # [RAG 저장] 성공한 코드만 저장
+        # Persist only successful code to the RAG cache
         if state.get('tool_code_list'):
-            # 현재 계획(tool_plan)과 생성된 코드(tool_code_list[0])를 저장
+            # Save the current plan and the generated tool code
             rag_manager.save_new_tool(state['tool_plan'], state['tool_code_list'][0])
             
         return {
@@ -2202,8 +2203,8 @@ def main():
     print(f"\n{LogUtils.GREEN}All Completed. Final results saved to: {output_path}{LogUtils.RESET}")
 
 if __name__ == "__main__":
-    # [Added] 로깅 설정 적용: 표준 출력과 에러를 DualLogger로 리다이렉트
+    # [Added] Apply logging: redirect stdout/stderr to DualLogger
     sys.stdout = DualLogger(ProjectConfig.LOG_FILE)
-    sys.stderr = sys.stdout # 에러도 로그 파일에 기록
+    sys.stderr = sys.stdout # capture stderr in the log file as well
     
     main()
