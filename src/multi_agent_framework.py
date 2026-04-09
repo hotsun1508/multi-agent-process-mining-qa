@@ -51,16 +51,16 @@ if not os.getenv("OPENAI_API_KEY"):
 # [Cost Optimization Strategy]
 # --------------------------------------------------
 # 1. Debugging Mode (All mini): useful for experiment loops at minimal cost.
-llm_supervisor = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-llm_worker = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+llm_supervisor = ChatOpenAI(model="gpt-5.4-mini", temperature=0)
+llm_worker = ChatOpenAI(model="gpt-5.4-mini", temperature=0)
 
 # 2. Hybrid Mode (Recommended): cheaper Supervisor/Assembler, stronger Coder.
 # llm_supervisor = ChatOpenAI(model="gpt-4o-mini", temperature=0) # mini is usually enough for planning
-# llm_worker = ChatOpenAI(model="gpt-4o", temperature=0)      # 4o is more reliable for code generation
+# llm_worker = ChatOpenAI(model="gpt-5.4", temperature=0)      # gpt-5.4 is more reliable for code generation
 
 # 3. Final Benchmark Mode: enable only for final paper-ready benchmark runs.
-# llm_supervisor = ChatOpenAI(model="gpt-4o", temperature=0)
-# llm_worker = ChatOpenAI(model="gpt-4o", temperature=0)
+# llm_supervisor = ChatOpenAI(model="gpt-5.4", temperature=0)
+# llm_worker = ChatOpenAI(model="gpt-5.4", temperature=0)
 
 class LogUtils:
     """Logging utilities optimized for debugging."""
@@ -155,7 +155,7 @@ def clean_and_parse_json(content: str):
                 pass
         raise ValueError(f"JSON Parsing Failed. Raw content: {content[:100]}...")
 
-print(f"[Init] LLM initialized. Supervisor & Worker: gpt-4o-mini")
+print(f"[Init] LLM initialized. Supervisor & Worker: gpt-5.4-mini")
 
 
 # --------------------------------------------------
