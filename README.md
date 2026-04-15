@@ -4,13 +4,6 @@ Code and packaged experiment assets for the paper:
 
 `ASPAI26: Multi-Agent Orchestration Framework for Complex Process Mining Query Answering`
 
-This repository is a cleaned public-release package extracted from the original research workspace. It includes:
-
-- The final multi-agent implementation for OCEL query answering
-- Three single-agent baseline variants
-- Query files, schemas, precomputed process abstractions, RAG resources, and selected final experiment artifacts
-- The paper PDF used for the release package
-
 ## Included Code
 
 - `src/multi_agent_framework.py`
@@ -66,11 +59,7 @@ git lfs install
 git add .gitattributes
 ```
 
-If you prefer a lighter repository, move `data/` and `artifacts/` to Zenodo, Hugging Face, or GitHub Releases and keep links here instead.
-
 ## Running the Main Methods
-
-Run from the repository root.
 
 Multi-agent:
 
